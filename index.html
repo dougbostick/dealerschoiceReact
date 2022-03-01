@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <script
+      src="https://unpkg.com/react@17/umd/react.development.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.0/axios.min.js"
+      integrity="sha512-bPh3uwgU5qEMipS/VOmRqynnMXGGSRv+72H/N260MQeXZIK4PG48401Bsby9Nq5P5fz7hy5UGNmC/W1Z51h2GQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div id="target"></div>
+    <script type="text/babel">
+      //component
+      class App extends React.Component {
+        constructor() {
+          console.log("constructor");
+          super();
+          this.state = {
+            partName: "",
+            parts: [],
+            selectedPart: null,
+          };
+        }
+
+        async selectPartType(partName) {
+          const response = await axios.get(`/api/${partName}`);
+          const selectedPart = response.data[0];
+          this.setState({
+            parts: response.data,
+            partName,
+            selectedPart,
+          });
+        }
+
+        async componentDidMount() {
+          this.selectPartType("cpus");
+        }
+        render() {
+          console.log("rend");
+          const items = this.state.parts.map((part) => {
+            return (
+              <li
+                onClick={() => this.setState({ selectedPart: part })}
+                key={part.id}
+              >
+                {part.name}
+              </li>
+            );
+          });
+          // the && makes sure the first half of the statement is true, before evaluating the second half
+          const selectedPartInfo = this.state.selectedPart && (
+            <div>price:{this.state.selectedPart.price}</div>
+          );
+
+          return (
+            <div>
+              <div onClick={() => this.selectPartType("gpus")}>GPUS</div>
+              <div onClick={() => this.selectPartType("cpus")}>CPUS</div>
+              <div onClick={() => this.selectPartType("motherboards")}>
+                Motherboards
+              </div>
+              <h1>{this.state.partName}</h1>
+              <ul>{items}</ul>
+              {selectedPartInfo}
+            </div>
+          );
+        }
+      }
+
+      const target = document.querySelector("#target");
+      ReactDOM.render(<App />, target);
+    </script>
+  </body>
+</html>
