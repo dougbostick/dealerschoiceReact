@@ -19,7 +19,6 @@
   <body>
     <div id="target"></div>
     <script type="text/babel">
-      //component
       class App extends React.Component {
         constructor() {
           console.log("constructor");
@@ -33,17 +32,19 @@
 
         async selectPartType(partName) {
           const response = await axios.get(`/api/${partName}`);
-          const selectedPart = response.data[0];
+          console.log("select part type response", response);
+          //const selectedPart = response.data;
           this.setState({
             parts: response.data,
             partName,
-            selectedPart,
+            // selectedPart,
           });
+          console.log("state after SPT", this.state);
         }
 
-        async componentDidMount() {
-          this.selectPartType("cpus");
-        }
+        // async componentDidMount() {
+        //   this.selectPartType("cpus");
+        // }
         render() {
           console.log("rend");
           const items = this.state.parts.map((part) => {
@@ -58,15 +59,42 @@
           });
           // the && makes sure the first half of the statement is true, before evaluating the second half
           const selectedPartInfo = this.state.selectedPart && (
-            <div>price:{this.state.selectedPart.price}</div>
+            <div>
+              {this.state.selectedPart.name} / price:$
+              {this.state.selectedPart.price} / benchmark:
+              {this.state.selectedPart.benchmark
+                ? this.state.selectedPart.benchmark
+                : " N/A"}
+            </div>
           );
 
           return (
             <div>
-              <div onClick={() => this.selectPartType("gpus")}>GPUS</div>
-              <div onClick={() => this.selectPartType("cpus")}>CPUS</div>
-              <div onClick={() => this.selectPartType("motherboards")}>
-                Motherboards
+              <div
+                style={{
+                  display: "flex",
+                  border: "solid black 10px",
+                  alignitems: "center",
+                }}
+              >
+                <div
+                  onClick={() => this.selectPartType("gpus")}
+                  style={{ margin: "15px" }}
+                >
+                  GPUS
+                </div>
+                <div
+                  onClick={() => this.selectPartType("cpus")}
+                  style={{ margin: "15px" }}
+                >
+                  CPUS
+                </div>
+                <div
+                  onClick={() => this.selectPartType("motherboards")}
+                  style={{ margin: "15px" }}
+                >
+                  Motherboards
+                </div>
               </div>
               <h1>{this.state.partName}</h1>
               <ul>{items}</ul>
